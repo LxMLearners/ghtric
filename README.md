@@ -14,24 +14,24 @@ Ensure that you have [Docker](https://www.docker.com) installed on your system b
 
 1. Clone this repository to your local machine.
 
-    ```bash
-    git clone https://github.com/dfmsoares/ghtric.git
-    cd repository
-    ```
+   ```bash
+   git clone https://github.com/dfmsoares/ghtric.git
+   cd repository
+   ```
 
 2. Build the Docker image.
 
-    ```bash
-    docker build -t <image-name> .
-    ```
+   ```bash
+   docker build -t <image-name> .
+   ```
 
-    Replace `<image-name>` with your desired name for the Docker image.
+   Replace `<image-name>` with your desired name for the Docker image.
 
 3. Run the Docker container.
 
-    ```bash
-    docker run -d -p 8080:8080 <image-name>
-    ```
+   ```bash
+   docker run -d -p 8080:8080 <image-name>
+   ```
 
 ### Accessing the Application
 
@@ -44,14 +44,10 @@ Once the Docker container is running, access the application through your web br
 
 Ensure that `<image-name>` is replaced with your chosen name for the Docker image.
 
-Feel free to explore and leverage the capabilities of G-HTric for your three-way dataset generation with annotated examples and planted triclustering solutions. If you encounter any issues or have suggestions, please check the [issues](https://github.com/example/repository/issues) section of the repository. A [documentation file]() is also available with details of the tool.
-
-Happy data processing with G-HTric! 🎉
+Feel free to explore and leverage the capabilities of G-HTric for your three-way dataset generation with annotated examples and planted triclustering solutions. If you encounter any issues or have suggestions, please check the [issues](github.com/dfmsoares/ghtric/issues) section of the repository. A [documentation file](github.com/dfmsoares/ghtric/documentation/) is also available with details of the tool.
 
 ## Citing the Paper 📑
 
 If you use G-HTric in your research, please cite our paper:
 
-*D.F. Soares, R. Henriques, and S.C. Madeira. (2024). G-HTric: Synthetic Generation of Heterogeneous Three-way Datasets with Annotated Triclustering Solutions. [Available Soon]*
-
-
+_D.F. Soares, R. Henriques, and S.C. Madeira. (2024). G-HTric: Synthetic Generation of Heterogeneous Three-way Datasets with Annotated Triclustering Solutions. [Available Soon]_
