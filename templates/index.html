@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="colorlib.com">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>G-HTric: 3W Dataset Generator</title>
+
+    <!-- Font Icon -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/material-icon/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/nouislider/nouislider.min.css') }} ">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <!-- Main css -->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="main">
+
+        <div class="container">
+            <div style="padding: 10px; margin-left: 30px;"> <h3>G-HTric: 3W Dataset Generator with Anotatted Examples</h3></div>
+            <form method="POST" id="gtrich-gen" class="signup-form" action="#">
+                <div>
+                    <h3>Dataset Properties</h3>
+                    <fieldset>
+                        <h2>Dataset Properties</h2>
+                        <p class="desc">Set the disered properties for the dataset</p>
+                        <div class="fieldset-content">
+                            <div class="form-row">
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="num_rows" class="form-label">Number of Rows</label>
+                                        <input type="number" name="num_rows" id="num_rows" value="100" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="num_cols" class="form-label">Number of Columns</label>
+                                        <input type="number" name="num_cols" id="num_cols" value="100" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="num_conts" class="form-label">Number of Contexts</label>
+                                        <input type="number" name="num_conts" id="num_conts" value="100" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-flex" id="targets">
+                                    <div class="form-group">
+                                        <label for="num_targets" class="form-label">Number of Class Targets</label>
+                                        <input type="number" name="num_targets" id="num_targets" value="2"/>
+                                    </div>
+
+                                    <div class="form-group f-imb">
+                                        <label for="imbalance-0" class="form-label">Elements of Class 0 (%)</label>
+                                        <input type="number" name="imbalance-0" id="imbalance-0" value="60"/>
+                                    </div>
+
+                                    <div class="form-group f-imb">
+                                        <label for="imbalance-1" class="form-label">Elements of Class 1 (%)</label>
+                                        <input type="number" name="imbalance-1" id="imbalance-1" value="40"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Dataset Type</label>
+                                <div class="form-radio-flex">
+                                    <div class="form-group">
+                                        <input type="radio" name="dataset_type" id="dataset_type_s" value="symbolic"/ checked>
+                                        <label for="dataset_type_s" class="form-label">Symbolic</label>
+
+                                        <input type="radio" name="dataset_type" id="dataset_type_n" value="numeric"/>
+                                        <label for="dataset_type_n" class="form-label">Numeric</label>
+
+                                        <input type="radio" name="dataset_type" id="dataset_type_h" value="heterogeneous"/>
+                                        <label for="dataset_type_h" class="form-label">Heterogeneous</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row d-none het-cols">
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="num_symbolic_cols" class="form-label">Number of Symbolic Columns</label>
+                                        <input type="number" name="num_symbolic_cols" id="num_symbolic_cols" value="50"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="num_numeric_cols" class="form-label">Number of Numeric Columns</label>
+                                        <input type="number" name="num_numeric_cols" id="num_numeric_cols" value="50"/>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-row symb_row">
+                                <label for="default_symbs" class="form-label">Symbol Type</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select class="disc-symbs" name="default_symbs" id="default_symbs">
+                                                <option value="default" selected>Default</option>
+                                                <option value="custom">Custom</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="num_symbs_form">
+                                        <input class="disc-symbs" type="number" name="num_symbs" id="num_symbs" value="10" />
+                                        <span class="text-input">Number of symbols</span>
+                                    </div>
+
+                                    <div class="form-group d-none" id="list_symbs_form">
+                                        <input class="disc-symbs" type="text" name="list_symb" id="list_symb" placeholder="1,2,3,4,5" />
+                                        <span class="text-input">List of symbols</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row symb_row">
+                                <label for="symbolic_background" class="form-label">Symbolic Background Type</label>
+                                <div class="form-flex" style="margin-bottom: 20px;">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="symbolic_background" id="symbolic_background" class="disc-symbs">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                                <option value="discrete">Discrete</option>
+                                                <option value="missing">Missing</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                        <div class="form-group sym-normal d-none">
+                                            <input type="number" name="bkg_param1_symb" id="bkg_param1_symb" value="0"/>
+                                            <span class="text-input">Mean </span>
+                                        </div>
+
+                                        <div class="form-group sym-normal d-none">
+                                            <input type="number" name="bkg_param2_symb" id="bkg_param2_symb" value="0"/>
+                                            <span class="text-input">Standard Deviation</span>
+                                        </div> 
+                                        <div class='form-group sym-discrete d-none'>
+                                            <textarea name="bkg_param3_symb" id="probs-symb" cols="30" rows="20"></textarea>
+                                            <span class="text-input">Insert each probability in front of the symbol. Ex: 1 - 0.3</span>
+                                        </div>
+                                </div>       
+                            </div>   
+
+                            <div class="form-row d-none num_row">
+                                <label for="real_valued" class="form-label">Numeric Data Type</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="real_valued" id="real_valued" class="disc-num">
+                                                <option value="integer">Integer</option>
+                                                <option value="real">Real Valued</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" name="min" id="min-int" class="disc-num" value="-10" />
+                                        <span class="text-input">Min Value</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="number" name="max" id="max-int" class="disc-num" value="10"/>
+                                        <span class="text-input">Max Value</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                                                     
+
+                            <div class="form-row d-none num_row">
+                                <label for="numeric_background" class="form-label">Numeric Background Type</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="numeric_background" id="numeric_background" class="disc-num">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                                <option value="discrete">Discrete</option>
+                                                <option value="missing">Missing</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                        <div class="form-group num-normal d-none">
+                                            <input type="number" name="bkg_param1_num" id="bkg_param1_num" value="0"/>
+                                            <span class="text-input">Mean </span>
+                                        </div>
+
+                                        <div class="form-group num-normal d-none">
+                                            <input type="number" name="bkg_param2_num" id="bkg_param2_num" value="0"/>
+                                            <span class="text-input">Standard Deviation</span>
+                                        </div>
+                                        <div class='form-group num-discrete d-none'>
+                                            <textarea name="bkg_param3_num" id="probs-num" cols="30" rows="20" blocked></textarea>
+                                            <span class="text-input">Insert each probability in front of the symbol. Ex: 1 - 0.3</span>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <h3>Columns Costumization</h3>
+                    <fieldset>
+                        <h2>Columns Customization</h2>
+                        <p class="desc">Set the disered characteristics for the dataset's columns</p>
+                        <div class="fieldset-content d-none heterogen">
+                            <div>
+                                <p class="med">No Customized Symbolic Columns: <span id="ncost_scols"></span></p>
+                                <p class="med">No Customized Numeric Columns: <span id="ncost_ncols"></span></p>
+                            </div>
+                            <div class="bkg_setts">
+                                <h4>Customized Columns</h4>
+                                <table class="alphabets">
+                                    <thead>
+                                        <tr>
+                                            <th>Nr Cols</th>
+                                            <th>Alphabet</th>
+                                            <th>Background</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                                <div class="bttts">
+                                    <button type="button" class="bkg-b" id="addNum">+ Numeric</button>
+                                    <button type="button" class="bkg-b" id="addSym">+ Symbolic</button>
+                                </div>
+                            </div>
+                            <div class="form-row d-none symb-form">
+                                <h4>Symbolic Columns</h4>
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <input type="number" name="" id="set_snrcols" value="1" />
+                                        <span class="text-input">Number of columns</span>
+                                    </div>
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select class="set_disc-symbs" name="set_default_symbs" id="set_default_symbs">
+                                                <option value="default" selected>Default</option>
+                                                <option value="custom">Custom</option>
+                                            </select>
+                                            <span class="text-input">Alphabet</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="set_num_symbs_form">
+                                        <input class="set_disc-symbs" type="number" name="set_num_symbs" id="set_num_symbs" value="10" />
+                                        <span class="text-input">Number of symbols</span>
+                                    </div>
+
+                                    <div class="form-group d-none" id="set_list_symbs_form">
+                                        <input class="set_disc-symbs" type="text" name="set_list_symb" id="set_list_symb" placeholder="1,2,3,4,5" />
+                                        <span class="text-input">List of symbols</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row d-none symb-form">
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="set_symbolic_background" id="set_symbolic_background" class="set_disc-symbs">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                                <option value="discrete">Discrete</option>
+                                                <option value="missing">Missing</option>
+                                            </select>
+                                            <span class="text-input">Background </span>
+                                        </div>
+                                    </div>
+                                        <div class="form-group set-sym-normal d-none">
+                                            <input type="number" name="set_bkg_param1_symb" id="set_bkg_param1_symb" value="0"/>
+                                            <span class="text-input">Mean </span>
+                                        </div>
+
+                                        <div class="form-group set-sym-normal d-none">
+                                            <input type="number" name="set_bkg_param2_symb" id="set_bkg_param2_symb" value="0"/>
+                                            <span class="text-input">Standard Deviation</span>
+                                        </div> 
+                                        <div class='form-group set-sym-discrete d-none'>
+                                            <textarea name="bkg_param3_symb" id="set_probs-symb" cols="30" rows="20"></textarea>
+                                            <span class="text-input">Insert each probability in front of the symbol. Ex: 1 - 0.3</span>
+                                        </div>
+                                </div>       
+                            </div>  
+                            <div class="bttts d-none symb-form">
+                                <button style="margin-top: 10px;" type="button" class="bkg-b" id="subSym">Add Setting</button>
+                            </div> 
+                            <div class="form-row d-none num-form">
+                                <h4>Numeric Columns</h4>
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <input type="number" name="set_nrcols" id="set_nrcols" value="1" />
+                                        <span class="text-input">Number of columns</span>
+                                    </div>
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="set_real_valued" id="set_real_valued" class="set_disc-num">
+                                                <option value="integer">Integer</option>
+                                                <option value="real">Real Valued</option>
+                                            </select>
+                                            <span class="text-input">Data Type</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="number" name="set_min" id="set_min-int" class="set_disc-num" value="-10" />
+                                        <span class="text-input">Min Value</span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="number" name="set_max" id="set_max-int" class="set_disc-num" value="10"/>
+                                        <span class="text-input">Max Value</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row d-none num-form">
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="set_numeric_background" id="set_numeric_background" class="set_disc-num">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                                <option value="discrete">Discrete</option>
+                                                <option value="missing">Missing</option>
+                                            </select>
+                                            <span class="text-input">Background </span>
+                                        </div>
+                                    </div>
+                                        <div class="form-group set-num-normal d-none">
+                                            <input type="number" name="set_bkg_param1_num" id="set_bkg_param1_num" value="0"/>
+                                            <span class="text-input">Mean </span>
+                                        </div>
+
+                                        <div class="form-group set-num-normal d-none">
+                                            <input type="number" name="set_bkg_param2_num" id="set_bkg_param2_num" value="0"/>
+                                            <span class="text-input">Standard Deviation</span>
+                                        </div>
+                                        <div class='form-group set-num-discrete d-none'>
+                                            <textarea name="set_bkg_param3_num" id="set_probs-num" cols="30" rows="20" blocked></textarea>
+                                            <span class="text-input">Insert each probability in front of the symbol. Ex: 1 - 0.3</span>
+                                        </div>
+                                </div>
+
+                            </div>
+                            <div class="bttts d-none num-form">
+                                <button style="margin-top: 10px;" type="button" class="bkg-b" id="subNum">Add Setting</button>
+                            </div>
+                            
+                        </div>
+                        <div class="fieldset-content no-heterogen" style="text-align: center; ">
+                            <h4 style="margin-top: 200px;">Only for Heterogeneous Datasets</h4>
+                        </div>
+                    </fieldset>
+
+                    <h3>Triclusters Properties</h3>
+                    <fieldset>
+                        <h2>Triclusters Properties</h2>
+                        <p class="desc">Set the disered properties for triclusters elements</p>
+                        <div class="fieldset-content">
+                            <div class="form-row">
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="num_trics" class="form-label">Number of Triclusters to Plant</label>
+                                        <input type="number" name="num_trics" id="num_trics" value="8"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <label for="symbol_type" class="form-label">Rows Structure</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="tric_rows_dist" id="tric_rows_dist">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                            </select>
+                                            <span class="text-input">Distribution</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group dist-rows">
+                                        <input type="number" name="min_dist_rows" id="min_dist_rows" value="6.0" />
+                                        <span class="text-input">Min</span>
+                                    </div>
+
+                                    <div class="form-group dist-rows">
+                                        <input type="number" name="max_dist_rows" id="max_dist_rows" value="8.0"/>
+                                        <span class="text-input">Max</span>
+                                    </div>
+                                    <div class="form-group d-none dist-rows">
+                                        <input type="number" name="mean_dist_rows" id="mean_dist_rows" value="6.0"/>
+                                        <span class="text-input">Mean</span>
+                                    </div>
+
+                                    <div class="form-group d-none dist-rows">
+                                        <input type="number" name="std_dist_rows" id="std_dist_rows" value="8.0"/>
+                                        <span class="text-input">Std. Dev.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row d-none heterogen">
+                                <label for="" class="form-label">Symbolic Columns Structure</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="htric_scols_dist" id="htric_scols_dist">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                            </select>
+                                            <span class="text-input">Distribution</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group hdist-scols">
+                                        <input type="number" name="min_dist_scols" id="min_dist_scols" value="5.0"/>
+                                        <span class="text-input">Min</span>
+                                    </div>
+
+                                    <div class="form-group hdist-scols">
+                                        <input type="number" name="max_dist_scols" id="max_dist_scols" value="7.0"/>
+                                        <span class="text-input">Max</span>
+                                    </div>
+                                    <div class="form-group d-none hdist-scols">
+                                        <input type="number" name="mean_dist_scols" id="mean_dist_scols" value="5.0"/>
+                                        <span class="text-input">Mean</span>
+                                    </div>
+
+                                    <div class="form-group d-none hdist-scols">
+                                        <input type="number" name="std_dist_scols" id="std_dist_scols" value="7.0"/>
+                                        <span class="text-input">Std. Dev.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row d-none heterogen">
+                                <label for="" class="form-label">Numeric Columns Structure</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="htric_ncols_dist" id="htric_ncols_dist">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                            </select>
+                                            <span class="text-input">Distribution</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group hdist-ncols">
+                                        <input type="number" name="min_dist_ncols" id="min_dist_ncols" value="5.0"/>
+                                        <span class="text-input">Min</span>
+                                    </div>
+
+                                    <div class="form-group hdist-ncols">
+                                        <input type="number" name="max_dist_ncols" id="max_dist_ncols" value="7.0"/>
+                                        <span class="text-input">Max</span>
+                                    </div>
+                                    <div class="form-group d-none hdist-ncols">
+                                        <input type="number" name="mean_dist_ncols" id="mean_dist_ncols" value="5.0"/>
+                                        <span class="text-input">Mean</span>
+                                    </div>
+
+                                    <div class="form-group d-none hdist-ncols">
+                                        <input type="number" name="std_dist_ncols" id="std_dist_ncols" value="7.0"/>
+                                        <span class="text-input">Std. Dev.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row no-heterogen">
+                                <label for="" class="form-label">Columns Structure</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="tric_cols_dist" id="tric_cols_dist">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                            </select>
+                                            <span class="text-input">Distribution</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group dist-cols">
+                                        <input type="number" name="min_dist_cols" id="min_dist_cols" value="5.0"/>
+                                        <span class="text-input">Min</span>
+                                    </div>
+
+                                    <div class="form-group dist-cols">
+                                        <input type="number" name="max_dist_cols" id="max_dist_cols" value="7.0"/>
+                                        <span class="text-input">Max</span>
+                                    </div>
+                                    <div class="form-group d-none dist-cols">
+                                        <input type="number" name="mean_dist_cols" id="mean_dist_cols" value="5.0"/>
+                                        <span class="text-input">Mean</span>
+                                    </div>
+
+                                    <div class="form-group d-none dist-cols">
+                                        <input type="number" name="std_dist_cols" id="std_dist_cols" value="7.0"/>
+                                        <span class="text-input">Std. Dev.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <label for="symbol_type" class="form-label">Contexts Structure</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="tric_conts_dist" id="tric_conts_dist">
+                                                <option value="uniform">Uniform</option>
+                                                <option value="normal">Normal</option>
+                                            </select>
+                                            <span class="text-input">Distribution</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group dist-conts">
+                                        <input type="number" name="min_dist_conts" id="min_dist_conts" value="5.0"/>
+                                        <span class="text-input">Min</span>
+                                    </div>
+
+                                    <div class="form-group dist-conts">
+                                        <input type="number" name="max_dist_conts" id="max_dist_conts" value="9.0"/>
+                                        <span class="text-input">Max</span>
+                                    </div>
+
+                                    <div class="form-group d-none dist-conts">
+                                        <input type="number" name="mean_dist_conts" id="mean_dist_conts" value="5.0"/>
+                                        <span class="text-input">Mean</span>
+                                    </div>
+
+                                    <div class="form-group d-none dist-conts">
+                                        <input type="number" name="std_dist_conts" id="std_dist_conts" value="9.0"/>
+                                        <span class="text-input">Std. Dev.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <label for="contiguity" class="form-label">Contiguity</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="contiguity" id="contiguity">
+                                                <option value="none">None</option>
+                                                <option value="columns">Columns</option>
+                                                <option value="contexts">Contexts</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
+                            
+
+
+                        </div>
+                    </fieldset>
+
+                    <h3>Triclusters Patterns</h3>
+                    <fieldset>
+                        <h2>Triclusters Patterns</h2>
+                        <p class="desc">Set the disered patterns for the triclustering solutions</p>
+                        <div class="fieldset-content">
+
+                            
+                            <div id="myModal" class="modal">
+                                <!-- Modal content -->
+                                <div class="modal-content">
+                                  <div class="modal-body">
+                                    <span class="close">&times;</span>
+                                    <div> 
+                                        <img id="patt-image" src="{{ url_for('static', filename='images/c_c_c.png') }}" alt="" width="100%">
+                                    </div>
+                                  </div>
+                                </div>
+                              
+                              </div>
+
+                            <div class="form-group" style="margin-left: 20px;">
+                                <div id="patterns-selected" style="max-height: 500px; overflow-x: hidden; overflow-y: auto;">
+                                    <div class="form-flex patt-row">
+                                        <span style="flex: 2; font-weight:bold;">Component</span>
+                                        <span style="flex: 2; font-weight:bold;">Row Pattern</span>
+                                        <span style="flex: 2; font-weight:bold;">Column Pattern</span>
+                                        <span style="flex: 2; font-weight:bold;">Context Pattern</span>
+                                        <span style="flex: 2;"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <h3>Overlapping</h3>
+                    <fieldset>
+                        <h2>Overlapping Properties</h2>
+                        <p class="desc"> Set the desired properties for triclusters overlapping</p>
+                        <div class="fieldset-content">
+                            
+                            <div class="form-row" style="margin-bottom: 15px;">
+                                <label for="plaid_coherency" class="form-label">Plaid Coherency</label>
+                                <div class="form-flex">
+                                    <div class="form-date-group">
+                                        <div class="form-date-item">
+                                            <select name="plaid_coherency" id="plaid_coherency" style="margin-left: 10px;">
+                                                <option value="no_overlapping">No Overlapping</option>
+                                                <option value="additive">Additive</option>
+                                                <option value="multiplicative">Multiplicative</option>
+                                                <option value="interpoled">Interpoled</option>
+                                                <option value="none">None</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="overlapping_perc_trics" class="form-label">% of overlapping triclusters</label>
+                                        <input type="number" class="ov" name="overlapping_perc_trics" id="overlapping_perc_trics" value="0" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="max_trics_overlapped_area" class="form-label">Maximum number of tricluster interactions</label>
+                                        <input type="number" class="ov" name="max_trics_overlapped_area" id="max_trics_overlapped_area" value="0"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="num_rperc_overlapped_elemsows" class="form-label">% of overlapping elements between triclusters</label>
+                                        <input type="number" class="ov" name="perc_overlapped_elems" id="perc_overlapped_elems" value="0"/>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-row">
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="perc_overlap_rows" class="form-label">% of overlapping rows</label>
+                                        <input type="number" class="ov" name="perc_overlap_rows" id="perc_overlap_rows" value="100" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="perc_overlap_cols" class="form-label">% of overlapping columns</label>
+                                        <input type="number" class="ov" name="perc_overlap_cols" id="perc_overlap_cols" value="100" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="perc_overlap_conts" class="form-label">% of overlapping contexts</label>
+                                        <input type="number" class="ov" name="perc_overlap_conts" id="perc_overlap_conts" value="100"/>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </fieldset>
+
+                    <h3>Quality</h3>
+                    <fieldset>
+                        <h2>Quality Properties</h2>
+                        <p class="desc">Set the desired properties for the quality of the dataset</p>
+                        <div class="fieldset-content">
+                            <div class="form-row">
+                                <h4>Missing Elements</h4>
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="missing_perc_bckg" class="form-label">% of missing values on background</label>
+                                        <input type="number" name="missing_perc_bckg" id="missing_perc_bckg" value="0" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="missing_perc_plant_trics" class="form-label">% of missing values on planted triclusters</label>
+                                        <input type="number" name="missing_perc_plant_trics" id="missing_perc_plant_trics" value="0" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <h4>Noisy Elements</h4>
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="noise_perc_bckg" class="form-label">% of noise on background</label>
+                                        <input type="number" name="noise_perc_bckg" id="noise_perc_bckg" value="0"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="noise_perc_plant_trics" class="form-label">% of noise on planted triclusters</label>
+                                        <input type="number" name="noise_perc_plant_trics" id="noise_perc_plant_trics" value="0"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="noise_deviation" class="form-label">Noise deviation</label>
+                                        <input type="number" name="noise_deviation" id="noise_deviation" value="0" />
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <h4>Errors</h4>
+                                <div class="form-flex">
+                                    <div class="form-group">
+                                        <label for="error_perc_bckg" class="form-label">% of errors on background</label>
+                                        <input type="number" name="error_perc_bckg" id="error_perc_bckg" value="0" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="error_perc_plant_trics" class="form-label">% of errors on planted triclusters</label>
+                                        <input type="number" name="error_perc_plant_trics" id="error_perc_plant_trics" value="0"/>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </fieldset>
+
+                    <h3>Output</h3>
+                    <fieldset>
+                        <h2>Output Settings</h2>
+                        <p class="desc">Set the output settings</p>
+                        <div class="fieldset-content" id="to-add">
+                            <div class="form-row">
+                                <label class="form-label">Save on:</label>
+                                <div class="form-radio-flex">
+                                    <div class="form-group">
+                                        <input type="radio" name="save_on" id="save_one" value="one"/ checked>
+                                        <label for="save_one" class="form-label">One file only</label>
+
+                                        <input type="radio" name="save_on" id="save_several" value="several"/>
+                                        <label for="save_several" class="form-label">Several files</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="filename" class="form-label">File Name</label>
+                                <input type="text" name="filename" id="filename" value="example_dataset" />
+                            </div>
+                            <div class="form-row">
+                                <label class="form-label">Set random seed for reproducibility:</label>
+                                <div class="form-radio-flex">
+                                    <div class="form-group">
+                                        <input type="radio" name="rand_seed" id="seed_no" value="no"/ checked>
+                                        <label for="seed_no" class="form-label">No</label>
+
+                                        <input type="radio" name="rand_seed" id="seed_yes" value="yes"/>
+                                        <label for="seed_yes" class="form-label">Yes</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group d-none" id="form-seed">
+                                <label for="seed" class="form-label">Seed</label>
+                                <input type="number" name="seed" id="seed" value="2023" />
+                            </div>
+                            <div class="form-group d-none" id="wait" style="text-align: center">
+                                <img src="static/images/wait.gif" alt="" width="12%" style="margin-top: 10px;">
+                            </div>
+                            <div id="download-area">
+                            </div>
+                        </div>
+                    </fieldset>
+
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/jquery-validation/dist/jquery.validate.min.js') }} "></script>
+    <script src="{{ url_for('static', filename='vendor/jquery-validation/dist/additional-methods.min.js') }} "></script>
+    <script src="{{ url_for('static', filename='vendor/jquery-steps/jquery.steps.min.js') }} "></script>
+    <script src="{{ url_for('static', filename='vendor/minimalist-picker/dobpicker.js') }} "></script>
+    <script src="{{ url_for('static', filename='vendor/nouislider/nouislider.min.js') }} "></script>
+    <script src="{{ url_for('static', filename='vendor/wnumb/wNumb.js') }} "></script>
+    <script src="{{ url_for('static', filename='js/main.js') }} "></script>
+    
+</body>
+
+</html>
