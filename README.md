@@ -44,7 +44,7 @@ Once the Docker container is running, access the application through your web br
 
 Ensure that `<image-name>` is replaced with your chosen name for the Docker image.
 
-Feel free to explore and leverage the capabilities of G-HTric for your three-way dataset generation with annotated examples and planted triclustering solutions. If you encounter any issues or have suggestions, please check the [issues](github.com/dfmsoares/ghtric/issues) section of the repository. A [documentation file](github.com/dfmsoares/ghtric/documentation/) is also available with details of the tool.
+Feel free to explore and leverage the capabilities of G-HTric for your three-way dataset generation with annotated examples and planted triclustering solutions. If you encounter any issues or have suggestions, please check the [issues](github.com/dfmsoares/ghtric/issues) section of the repository. A [documentation file](github.com/dfmsoares/ghtric/blob/master/documentation/Documentation_G-HTric.pdf) is also available with details of the tool.
 
 ## Citing the Paper 📑
 
