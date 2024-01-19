@@ -827,8 +827,8 @@
                     console.log(xhr);
                     console.log(status);
                   console.error("Error:", error);
-                  $('#to-add').find("div:last").remove();
-                  $('#to-add').append(`
+                  $('#download-area').empty();
+                  $('#download-area').append(`
                                     <div class="form-row">
                                         <div class="form-flex">
                                             <div class="form-date-group">
