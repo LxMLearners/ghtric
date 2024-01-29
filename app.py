@@ -326,6 +326,7 @@ def generate_3way_dataset():
                                float(data.get("noise_perc_bckg"))/100,
                                float(data.get("noise_perc_plant_trics"))/100,
                                float(data.get("noise_deviation")),
+                               float(data.get("noise_deviation_symbolic")),
                                float(data.get("error_perc_bckg"))/100,
                                float(data.get("error_perc_plant_trics"))/100)
 

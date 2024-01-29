@@ -252,7 +252,7 @@
                 $(".num-discrete").removeClass('d-none');
             } else{
                 $(".num-discrete").addClass('d-none');
-                $("#probs-symb").val("");
+                $("#probs-num").val("");
             }
         });
 
@@ -260,20 +260,20 @@
 
         $('.disc-symbs').on("change",function() {
 
-            result_str = "";
+            result_str_s = "";
             if ($('select[name=symbolic_background]').find(":selected").val() == 'discrete'){
                 if ($('select[name=default_symbs]').find(":selected").val() == "default") {
                     num_s = parseInt($('#num_symbs').val())+1;
                     for (let s_i = 1; s_i < num_s; s_i++) {
-                        result_str += s_i + " - 0.0\n";
+                        result_str_s += s_i + " - 0.0\n";
                     }
                 } else {
                     symbs = $('#list_symb').val().split(",")
                     for (let s_i = 0; s_i < symbs.length; s_i++) {
-                        result_str += symbs[s_i] + " - 0.0\n";
+                        result_str_s += symbs[s_i] + " - 0.0\n";
                     }
                 } 
-                $('#probs-symb').val(result_str);
+                $('#probs-symb').val(result_str_s);
             }
         });
 
